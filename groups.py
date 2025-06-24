@@ -2,13 +2,27 @@
 import os
 from pyad import adgroup
 
-def add_group(group_name: str, base_dir: str, logger):
-    """
-    Maakt een nieuwe AD-groep én een directory met groepseigenaar.
+def add_group(
+    group_name: str,
+    base_dir: str,
+    logger,
+    container_dn: str = "OU=Groups,DC=poliforma,DC=local",
+):
+    """Create a new AD group and corresponding directory.
+
+    Parameters
+    ----------
+    group_name: str
+        Name of the group to create.
+    base_dir: str
+        Directory path where the group's folder will be created.
+    logger
+        Logger instance for logging actions.
+    container_dn: str, optional
+        Distinguished name of the container where the group will be created.
     """
     # AD-groep
-    group = adgroup.ADGroup.create(group_name,
-                                   container_dn="OU=Groups,DC=poliforma,DC=local")
+    group = adgroup.ADGroup.create(group_name, container_dn=container_dn)
     logger.info(f"Nieuwe AD-groep {group_name} aangemaakt")
 
     # Directory
