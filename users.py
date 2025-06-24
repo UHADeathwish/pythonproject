@@ -1,6 +1,6 @@
 # users.py
 from pyad import aduser, adcontainer
-from pyad.pyadexceptions import ADException
+from pyad.pyadexceptions import PyADException
 import os
 from directories import create_home_directory
 
@@ -55,7 +55,7 @@ def add_user(
                 "userAccountControl": 514  # disabled
             }
         )
-    except (ADException, Exception) as e:
+    except (PyADException, Exception) as e:
         logger.error(f"Failed to create user in {container.dn}: {e}")
         raise RuntimeError(
             f"Failed to create user '{username}' in container {container.dn}"
