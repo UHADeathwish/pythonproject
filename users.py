@@ -1,5 +1,6 @@
 # users.py
 from pyad import aduser, adcontainer
+import pyad
 from pyad.pyadexceptions import PyADException
 import os
 from directories import create_home_directory
@@ -73,5 +74,12 @@ def add_user(
     home_path = os.path.join(base_home, username)
     create_home_directory(home_path, group_dn, logger)
     logger.info(f"Home directory {home_path} created")
+
+    # Add the new user to the specified group
+    try:
+        pyad.adgroup.ADGroup.from_dn(group_dn).add_members([user])
+        logger.info(f"User {username} added to group {group_dn}")
+    except Exception as e:
+        logger.error(f"Failed adding {username} to group {group_dn}: {e}")
 
     return user, home_path
