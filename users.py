@@ -3,8 +3,35 @@ from pyad import aduser, adcontainer
 import os
 from directories import create_home_directory
 
-def add_user(username: str, firstname: str, lastname: str, group_dn: str, base_home: str, logger):
-    container = adcontainer.ADContainer.from_dn("OU=pythonusers,DC=poliforma,DC=local")
+def add_user(
+    username: str,
+    firstname: str,
+    lastname: str,
+    group_dn: str,
+    base_home: str,
+    logger,
+    container_dn: str = "OU=pythonusers,DC=poliforma,DC=local",
+):
+    """Create a new user in the specified container.
+
+    Parameters
+    ----------
+    username: str
+        Logon name for the new user.
+    firstname: str
+        Given name of the user.
+    lastname: str
+        Surname of the user.
+    group_dn: str
+        Distinguished name of the group for setting permissions on the home directory.
+    base_home: str
+        Base directory where the home folder will be created.
+    logger
+        Logger instance for logging actions.
+    container_dn: str, optional
+        Distinguished name of the container where the user will be created.
+    """
+    container = adcontainer.ADContainer.from_dn(container_dn)
 
     # Try removing an existing user to avoid naming conflicts
     try:
