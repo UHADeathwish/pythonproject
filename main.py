@@ -1,5 +1,6 @@
 # main.py
 import argparse
+import os
 from connection import init_connection
 from logger import configure_logger
 from users import add_user
@@ -8,6 +9,21 @@ from summary import write_summary
 
 def main():
     parser = argparse.ArgumentParser(description="On-/offboarding in AD automatiseren")
+    parser.add_argument(
+        "--server",
+        default=os.environ.get("AD_SERVER"),
+        help="LDAP server address",
+    )
+    parser.add_argument(
+        "--username",
+        default=os.environ.get("AD_USERNAME"),
+        help="Bind account username",
+    )
+    parser.add_argument(
+        "--password",
+        default=os.environ.get("AD_PASSWORD"),
+        help="Bind account password",
+    )
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     # add-user
@@ -36,8 +52,13 @@ def main():
 
     args = parser.parse_args()
 
+    if not (args.server and args.username and args.password):
+        parser.error(
+            "Server, username and password must be provided via options or environment variables"
+        )
+
     # Init
-    init_connection("poliforma.local", "administrator", "Welkom01")
+    init_connection(args.server, args.username, args.password)
     logger = configure_logger("ad_script.log")
 
     if args.cmd == "add-user":

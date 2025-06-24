@@ -1,6 +1,8 @@
 # connection.py
 from pyad import pyad
 from pyad import aduser
+import argparse
+import os
 
 def init_connection(ldap_server: str, username: str, password: str):
     """
@@ -18,8 +20,30 @@ def init_connection(ldap_server: str, username: str, password: str):
 
 # Verbinding test uitvoeren indien dit script direct wordt uitgevoerd
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Test AD connection")
+    parser.add_argument(
+        "--server",
+        default=os.environ.get("AD_SERVER"),
+        help="LDAP server address",
+    )
+    parser.add_argument(
+        "--username",
+        default=os.environ.get("AD_USERNAME"),
+        help="Bind account username",
+    )
+    parser.add_argument(
+        "--password",
+        default=os.environ.get("AD_PASSWORD"),
+        help="Bind account password",
+    )
+    args = parser.parse_args()
+    if not (args.server and args.username and args.password):
+        parser.error(
+            "Server, username and password must be provided via options or environment variables"
+        )
+
     init_connection(
-        ldap_server="192.168.1.130",      # Server IP / Hostname
-        username="Administrator",        # Username
-        password="Welkom01"      # Wachtwoord
+        ldap_server=args.server,
+        username=args.username,
+        password=args.password,
     )
