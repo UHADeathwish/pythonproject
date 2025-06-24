@@ -1,5 +1,6 @@
 # users.py
 from pyad import aduser, adcontainer
+from pyad.pyadexceptions import ADException
 import os
 from directories import create_home_directory
 
@@ -42,17 +43,23 @@ def add_user(
         pass
 
     # Create a disabled user with minimal attributes
-    user = aduser.ADUser.create(
-        username,
-        container,
-        optional_attributes={
-            "givenName": firstname,
-            "sn": lastname,
-            "sAMAccountName": username,
-            "userPrincipalName": f"{username}@poliforma.local",
-            "userAccountControl": 514  # disabled
-        }
-    )
+    try:
+        user = aduser.ADUser.create(
+            username,
+            container,
+            optional_attributes={
+                "givenName": firstname,
+                "sn": lastname,
+                "sAMAccountName": username,
+                "userPrincipalName": f"{username}@poliforma.local",
+                "userAccountControl": 514  # disabled
+            }
+        )
+    except (ADException, Exception) as e:
+        logger.error(f"Failed to create user in {container.dn}: {e}")
+        raise RuntimeError(
+            f"Failed to create user '{username}' in container {container.dn}"
+        ) from e
     logger.info(f"User {username} created (disabled).")
 
     # Try a more complex password
